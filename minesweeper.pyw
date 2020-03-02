@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 import random
 
-def init():
+def init(): #initialises the setup window
 	global var, label, root
 
 	root= Tk()
@@ -22,24 +22,24 @@ def init():
 
 	root.mainloop()
 
-def tryStart():
+def tryStart():  #starts the game if a valid input is added
 	global cols
 	try:
 		cols = int(var.get())
-		if (cols < 100):
+		if (cols < 100): #max column size = 100^2
 			root.destroy()		
 			start(cols)
 		else:
 			print("Not a valid input")
 			label["text"] = "Please Enter a Valid Input"
 			var.set("")
-	except ValueError:
+	except ValueError: #number of columns must be a valid number
 		print("Not a valid input")
 		label["text"] = "Please Enter a Valid Input"
 		var.set("")
 
 
-def start(cols):
+def start(cols): #starts the main window and generates bomb positions.
 	global mainRoot, arr, bombs, revealedButtons, flagPositions
 	mainRoot = Tk()
 	mainRoot.title("Minesweeper")
@@ -62,7 +62,7 @@ def start(cols):
 	bombs = []
 	for x in range(cols):
 		for y in range(cols):
-			arr.append(ttk.Button(frameMain,width=4, text="{}, {}".format(x,y), command=lambda x=x, y=y: onClick(x,y)))
+			arr.append(ttk.Button(frameMain,width=4, text="", command=lambda x=x, y=y: onClick(x,y)))
 			arr[-1].bind("<Button-3>", lambda z=1, x=x, y=y: onRightClick(z,x,y))
 			arr[-1].grid(row=x, column=y)
 
@@ -79,16 +79,14 @@ def start(cols):
 	mainRoot.resizable(0,0)
 	mainRoot.mainloop()
 
-def onClick(x,y):
-	print("Debug --", x,y, y + x * cols)
-
+def onClick(x,y): #handling for left click (reveal)
 	position = y + x * cols
 	if position in bombs:
 		end(False)
 		arr[position]["text"] = "Bomb"
 	else:
 		reveal(position, x, y)
-def onRightClick(this,x,y):
+def onRightClick(this,x,y): #handling for right click (toggle flag)
 	position = y + x * cols
 
 	print(x,y, position)
@@ -98,7 +96,7 @@ def onRightClick(this,x,y):
 		arr[position]["text"] = "Flag"
 	else:
 		flagPositions.remove(position)
-		arr[position]["text"] = "{}, {}".format(x,y)
+		arr[position]["text"] = ""
 
 	print(flagPositions)
 	print(bombs)
@@ -107,8 +105,7 @@ def onRightClick(this,x,y):
 		print("Win")
 		end(True)
 
-def reveal(args ,x ,y):
-
+def reveal(args ,x ,y): #reveals the number of surrounding bombs, or ends the game if clicked a bomb. This will be called recursively if nearBombs==0
 	if args in revealedButtons:
 		return 0;
 	revealedButtons.append(args)
@@ -139,38 +136,16 @@ def reveal(args ,x ,y):
 			except IndexError:
 				pass
 
-def end(cond):
+def end(cond): #ends the game
 	print("Game Over")
 	for i in arr:
 
 		i["state"] = "disabled"
 
-def restart():
+def restart(): #restarts the game by destroying and restarting window
 	mainRoot.destroy()
 	init()
 
-def scoreBoard():
-	scoreBoard = Tk()
-	scoreBoard.title("High Scores")
-	scoreBoard.resizable(0,0)
-
-	title = ttk.Label(scoreBoard, text="High Scores")
-	title.pack(pady=5)
-
-	frameMain = Frame(scoreBoard)
-	frameMain.pack()
-
-	highScoreList = Listbox(scoreBoard, width=50)
-	highScoreList.pack()
-
-	highScoreList.insert(END,"Test")
-
-	highScoreList.insert(END,"Test2")
-
-	scoreBoard.mainloop()
-
-def addScore():
-	pass
 init()
 #scoreBoard()
 
